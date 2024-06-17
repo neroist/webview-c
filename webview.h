@@ -1308,9 +1308,7 @@ window.__webview__.onUnbind(" +
   noresult set_size(int width, int height, webview_hint_t hints) {
     return set_size_impl(width, height, hints);
   }
-  noresult set_pos(int x, int y) {
-    return set_pos_impl(x, y);
-  }
+  noresult set_pos(int x, int y) { return set_pos_impl(x, y); }
 
   noresult set_html(const std::string &html) { return set_html_impl(html); }
 
@@ -1846,8 +1844,7 @@ protected:
     return {};
   }
   noresult set_pos_impl(int x, int y) override {
-    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y);
-    return {};
+    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y) return {};
   }
 
   noresult navigate_impl(const std::string &url) override {
@@ -2255,7 +2252,7 @@ protected:
 
     return {};
   }
-  
+
   noresult navigate_impl(const std::string &url) override {
     objc::autoreleasepool arp;
 
@@ -4014,7 +4011,8 @@ protected:
   }
 
   noresult set_pos_impl(int x, int y) {
-    SetWindowPos(m_window, nullptr, x, y, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE | SWP_FRAMECHANGED);
+    SetWindowPos(m_window, nullptr, x, y, 0, 0,
+                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE | SWP_FRAMECHANGED);
     return {};
   }
 
@@ -4376,8 +4374,7 @@ WEBVIEW_API webview_error_t webview_set_size(webview_t w, int width, int height,
 
 WEBVIEW_API webview_error_t webview_set_pos(webview_t w, int x, int y) {
   using namespace webview::detail;
-  return api_filter(
-      [=] { return cast_to_webview(w)->set_pos(x, y); });
+  return api_filter([=] { return cast_to_webview(w)->set_pos(x, y); });
 }
 
 WEBVIEW_API webview_error_t webview_navigate(webview_t w, const char *url) {
