@@ -1846,7 +1846,7 @@ protected:
     return {};
   }
   noresult set_pos_impl(int x, int y) override {
-    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y)
+    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y);
     return {};
   }
 
