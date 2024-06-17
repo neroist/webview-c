@@ -1844,7 +1844,8 @@ protected:
     return {};
   }
   noresult set_pos_impl(int x, int y) override {
-    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y) return {};
+    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y);
+    return {};
   }
 
   noresult navigate_impl(const std::string &url) override {
