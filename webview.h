@@ -314,6 +314,15 @@ WEBVIEW_API webview_error_t webview_set_size(webview_t w, int width, int height,
                                              webview_hint_t hints);
 
 /**
+ * Updates the position of the native window.
+ *
+ * @param w The webview instance.
+ * @param x New X.
+ * @param y New Y.
+ */
+WEBVIEW_API webview_error_t webview_set_pos(webview_t w, int y, int x);
+
+/**
  * Navigates webview to the given URL. URL may be a properly encoded data URI.
  *
  * Example:
@@ -1299,6 +1308,7 @@ window.__webview__.onUnbind(" +
   noresult set_size(int width, int height, webview_hint_t hints) {
     return set_size_impl(width, height, hints);
   }
+  noresult set_pos(int x, int y) { return set_pos_impl(x, y); }
 
   noresult set_html(const std::string &html) { return set_html_impl(html); }
 
@@ -1320,6 +1330,7 @@ protected:
   virtual noresult set_title_impl(const std::string &title) = 0;
   virtual noresult set_size_impl(int width, int height,
                                  webview_hint_t hints) = 0;
+  virtual noresult set_pos_impl(int x, int y) = 0;
   virtual noresult set_html_impl(const std::string &html) = 0;
   virtual noresult eval_impl(const std::string &js) = 0;
 
@@ -1832,6 +1843,10 @@ protected:
     }
     return {};
   }
+  noresult set_pos_impl(int x, int y) override {
+    gtk_window_move(GTK_WINDOW(m_window), (gint)x, (gint)y);
+    return {};
+  }
 
   noresult navigate_impl(const std::string &url) override {
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(m_webview), url.c_str());
@@ -2231,6 +2246,14 @@ protected:
 
     return {};
   }
+  noresult set_pos_impl(int x, int y) override {
+    objc::autoreleasepool arp;
+    objc::msg_send<void>(m_window, "setFrameTopLeftPoint:"_sel,
+                         CGPointMake(x, y));
+
+    return {};
+  }
+
   noresult navigate_impl(const std::string &url) override {
     objc::autoreleasepool arp;
 
@@ -3988,6 +4011,12 @@ protected:
     return {};
   }
 
+  noresult set_pos_impl(int x, int y) {
+    SetWindowPos(m_window, nullptr, x, y, 0, 0,
+                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE | SWP_FRAMECHANGED);
+    return {};
+  }
+
   noresult navigate_impl(const std::string &url) override {
     auto wurl = widen_string(url);
     m_webview->Navigate(wurl.c_str());
@@ -4342,6 +4371,11 @@ WEBVIEW_API webview_error_t webview_set_size(webview_t w, int width, int height,
   using namespace webview::detail;
   return api_filter(
       [=] { return cast_to_webview(w)->set_size(width, height, hints); });
+}
+
+WEBVIEW_API webview_error_t webview_set_pos(webview_t w, int x, int y) {
+  using namespace webview::detail;
+  return api_filter([=] { return cast_to_webview(w)->set_pos(x, y); });
 }
 
 WEBVIEW_API webview_error_t webview_navigate(webview_t w, const char *url) {
